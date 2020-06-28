@@ -1,8 +1,8 @@
 package io.tanghuibo.github.springmultiplemybatis.config;
 
 import org.springframework.beans.factory.FactoryBean;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.*;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
@@ -18,35 +18,37 @@ import javax.sql.DataSource;
 public class MybatisScannerRegistrar implements ImportBeanDefinitionRegistrar {
 
     @Override
-    public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry, BeanNameGenerator importBeanNameGenerator) {
+    public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
         registryDataSource("one", registry);
         registryDataSource("two", registry);
-
-
     }
 
     private void registryDataSource(String namePrefix, BeanDefinitionRegistry registry) {
         String beanName = namePrefix + "DataSource";
         BeanDefinitionBuilder beanDefinitionBuilder = BeanDefinitionBuilder.genericBeanDefinition(DataSourceFactoryBean.class);
-        AbstractBeanDefinition beanDefinition = beanDefinitionBuilder.getBeanDefinition();
+        beanDefinitionBuilder.addPropertyValue("namePrefix", namePrefix);
+        BeanDefinition beanDefinition = beanDefinitionBuilder.getBeanDefinition();
         registry.registerBeanDefinition(beanName, beanDefinition);
-    }
-
-    @Override
-    public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
-
-
     }
 
     static class DataSourceFactoryBean implements FactoryBean<DataSource>, EnvironmentAware {
 
+        /**
+         * 名称
+         */
+        private String namePrefix;
+
+
         private Environment environment;
 
         @Override
-        @ConfigurationProperties("spring.datasource.one")
-        public DataSource getObject() throws Exception {
-            DataSource dataSource = DataSourceBuilder.create().build();
-            return dataSource;
+        public DataSource getObject() {
+            return DataSourceBuilder.create()
+                    .url(getProperty("url"))
+                    .username(getProperty("username"))
+                    .password(getProperty("password"))
+                    .driverClassName(getProperty("driver-class-name"))
+                    .build();
         }
 
         @Override
@@ -54,10 +56,17 @@ public class MybatisScannerRegistrar implements ImportBeanDefinitionRegistrar {
             return DataSource.class;
         }
 
+        private String getProperty(String key) {
+            return environment.getProperty("spring.datasource." + namePrefix + "." + key);
+        }
 
         @Override
         public void setEnvironment(Environment environment) {
             this.environment = environment;
+        }
+
+        public void setNamePrefix(String namePrefix) {
+            this.namePrefix = namePrefix;
         }
     }
 }
