@@ -13,6 +13,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Import(MybatisScannerRegistrar.class)
+@Repeatable(SQLSessionFactoryInjections.class)
 public @interface SQLSessionFactoryInjection {
 
     /**
