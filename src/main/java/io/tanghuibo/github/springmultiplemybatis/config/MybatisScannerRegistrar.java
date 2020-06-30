@@ -1,6 +1,7 @@
 package io.tanghuibo.github.springmultiplemybatis.config;
 
 import io.tanghuibo.github.springmultiplemybatis.annotation.SQLSessionFactoryInjection;
+import io.tanghuibo.github.springmultiplemybatis.annotation.SQLSessionFactoryInjections;
 import io.tanghuibo.github.springmultiplemybatis.bean.factory.DataSourceFactoryBean;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.*;
@@ -18,6 +19,10 @@ public class MybatisScannerRegistrar implements ImportBeanDefinitionRegistrar {
     public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
         AnnotationAttributes mapperScanAttrs = AnnotationAttributes
                 .fromMap(importingClassMetadata.getAnnotationAttributes(SQLSessionFactoryInjection.class.getName()));
+        registryMybatis(registry, mapperScanAttrs);
+    }
+
+    void registryMybatis(BeanDefinitionRegistry registry, AnnotationAttributes mapperScanAttrs) {
         if(mapperScanAttrs != null) {
             registryDataSource(mapperScanAttrs.getString("name"), registry);
         }
@@ -29,5 +34,26 @@ public class MybatisScannerRegistrar implements ImportBeanDefinitionRegistrar {
         beanDefinitionBuilder.addPropertyValue("namePrefix", namePrefix);
         BeanDefinition beanDefinition = beanDefinitionBuilder.getBeanDefinition();
         registry.registerBeanDefinition(beanName, beanDefinition);
+    }
+
+    /**
+     * {@link MybatisScannerRegistrar} for {@link SQLSessionFactoryInjections}.
+     *
+     */
+    public static class RepeatingRegistrar extends MybatisScannerRegistrar {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
+            AnnotationAttributes mapperScansAttrs = AnnotationAttributes
+                    .fromMap(importingClassMetadata.getAnnotationAttributes(SQLSessionFactoryInjections.class.getName()));
+            if (mapperScansAttrs != null) {
+                AnnotationAttributes[] annotations = mapperScansAttrs.getAnnotationArray("value");
+                for (AnnotationAttributes annotation : annotations) {
+                    registryMybatis(registry, annotation);
+                }
+            }
+        }
     }
 }

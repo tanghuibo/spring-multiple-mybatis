@@ -1,5 +1,8 @@
 package io.tanghuibo.github.springmultiplemybatis.annotation;
 
+import io.tanghuibo.github.springmultiplemybatis.config.MybatisScannerRegistrar;
+import org.springframework.context.annotation.Import;
+
 import java.lang.annotation.*;
 
 /**
@@ -9,6 +12,7 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+@Import(MybatisScannerRegistrar.RepeatingRegistrar.class)
 public @interface SQLSessionFactoryInjections {
 
 

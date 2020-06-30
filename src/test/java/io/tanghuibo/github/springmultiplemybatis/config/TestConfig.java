@@ -18,20 +18,16 @@ import javax.sql.DataSource;
 public class TestConfig {
 
 
-    @Bean("threeDataSource")
-    @Primary
-    @ConfigurationProperties(prefix = "spring.datasource.three")
-    public DataSource buildDataSource() {
-        return DataSourceBuilder.create().build();
-    }
 
     @Bean("TestData")
-    public TestData buildTestData(@Qualifier("oneDataSource") DataSource dataSource1,
-                            @Qualifier("twoDataSource") DataSource dataSource2,
-                            @Qualifier("threeDataSource") DataSource dataSource3) {
-        System.out.println(dataSource1);
-        System.out.println(dataSource2);
-        System.out.println(dataSource3);
+    public TestData buildTestData(@Qualifier("oneDataSource") DataSource oneDataSource,
+                                  @Qualifier("twoDataSource") DataSource twoDataSource,
+                                  @Qualifier("threeDataSource") DataSource threeDataSource,
+                                  @Qualifier("fourDataSource") DataSource fourDataSource) {
+        System.out.println(oneDataSource);
+        System.out.println(twoDataSource);
+        System.out.println(threeDataSource);
+        System.out.println(fourDataSource);
         return new TestData();
     }
 }
