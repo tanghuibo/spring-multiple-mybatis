@@ -9,5 +9,6 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @SQLSessionFactoryInjection(name = "two")
-public class TwoSessionFactoryConfig {
+@SQLSessionFactoryInjection(name = "three")
+public class DoubleFactoryConfig {
 }

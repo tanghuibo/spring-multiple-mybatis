@@ -3,6 +3,8 @@ package io.tanghuibo.github.springmultiplemybatis.config;
 import io.tanghuibo.github.springmultiplemybatis.annotation.SQLSessionFactoryInjection;
 import io.tanghuibo.github.springmultiplemybatis.annotation.SQLSessionFactoryInjections;
 import io.tanghuibo.github.springmultiplemybatis.bean.factory.DataSourceFactoryBean;
+import io.tanghuibo.github.springmultiplemybatis.bean.factory.SqlSessionFactoryFactoryBean;
+import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.*;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
@@ -24,8 +26,28 @@ public class MybatisScannerRegistrar implements ImportBeanDefinitionRegistrar {
 
     void registryMybatis(BeanDefinitionRegistry registry, AnnotationAttributes mapperScanAttrs) {
         if(mapperScanAttrs != null) {
-            registryDataSource(mapperScanAttrs.getString("name"), registry);
+            String name = mapperScanAttrs.getString("name");
+            registryDataSource(name, registry);
+            registrySqlSessionFactory(name, registry);
+            registrySqlSessionTemplate(name, registry);
         }
+    }
+
+    private void registrySqlSessionTemplate(String namePrefix, BeanDefinitionRegistry registry) {
+        String beanName = namePrefix + "SqlSessionTemplate";
+        BeanDefinitionBuilder beanDefinitionBuilder = BeanDefinitionBuilder.genericBeanDefinition(SqlSessionTemplate.class);
+        beanDefinitionBuilder.addConstructorArgReference(namePrefix + "SqlSessionFactory");
+        BeanDefinition beanDefinition = beanDefinitionBuilder.getBeanDefinition();
+        registry.registerBeanDefinition(beanName, beanDefinition);
+    }
+
+    private void registrySqlSessionFactory(String namePrefix, BeanDefinitionRegistry registry) {
+        String beanName = namePrefix + "SqlSessionFactory";
+        BeanDefinitionBuilder beanDefinitionBuilder = BeanDefinitionBuilder.genericBeanDefinition(SqlSessionFactoryFactoryBean.class);
+        beanDefinitionBuilder.addPropertyValue("namePrefix", namePrefix);
+        beanDefinitionBuilder.addPropertyReference("dataSource", namePrefix + "DataSource");
+        BeanDefinition beanDefinition = beanDefinitionBuilder.getBeanDefinition();
+        registry.registerBeanDefinition(beanName, beanDefinition);
     }
 
     private void registryDataSource(String namePrefix, BeanDefinitionRegistry registry) {

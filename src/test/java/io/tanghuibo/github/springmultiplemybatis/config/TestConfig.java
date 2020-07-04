@@ -1,14 +1,13 @@
 package io.tanghuibo.github.springmultiplemybatis.config;
 
 import io.tanghuibo.github.springmultiplemybatis.TestData;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 
 import javax.sql.DataSource;
+import java.util.List;
 
 /**
  * @author tanghuibo
@@ -20,14 +19,12 @@ public class TestConfig {
 
 
     @Bean("TestData")
-    public TestData buildTestData(@Qualifier("oneDataSource") DataSource oneDataSource,
-                                  @Qualifier("twoDataSource") DataSource twoDataSource,
-                                  @Qualifier("threeDataSource") DataSource threeDataSource,
-                                  @Qualifier("fourDataSource") DataSource fourDataSource) {
-        System.out.println(oneDataSource);
-        System.out.println(twoDataSource);
-        System.out.println(threeDataSource);
-        System.out.println(fourDataSource);
+    public TestData buildTestData(List<DataSource> dataSourceList,
+                                  List<SqlSessionFactory> sqlSessionFactories,
+                                  List<SqlSessionTemplate> sqlSessionTemplates) {
+        System.out.println(dataSourceList);
+        System.out.println(sqlSessionFactories);
+        System.out.println(sqlSessionTemplates);
         return new TestData();
     }
 }

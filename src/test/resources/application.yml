@@ -18,4 +18,10 @@ spring:
       password: 123456
       driver-class-name: com.mysql.jdbc.Driver
       type: com.zaxxer.hikari.HikariDataSource
-
+mybatis:
+  one:
+    mapper-locations: classpath:mapping/one/**Mapper.xml
+  two:
+    mapper-locations: classpath:mapping/two/**Mapper.xml
+  three:
+    mapper-locations: classpath:mapping/three/**Mapper.xml
