@@ -2,6 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="io.tanghuibo.github.springmultiplemybatis.mapper.one.OneMapper">
 
+    <insert id="insertTest">
+        insert test_table(name) values ('one_test');
+    </insert>
+
     <select id="selectTest" resultType="java.lang.String">
         select 'one' from dual
     </select>

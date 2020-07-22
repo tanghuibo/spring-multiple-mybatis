@@ -11,4 +11,10 @@ public interface OneMapper {
      * @return 测试结果
      */
     String selectTest();
+
+    /**
+     * 新增数据
+     * @return
+     */
+    int insertTest();
 }
